@@ -3,12 +3,12 @@ import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { render } from '@react-email/components'
 
-// import type { SessionMetadata } from '@/src/shared/types/session-metadata.types'
+import type { SessionMetadata } from '@/src/shared/types/session-metadata.types'
 
 // import { AccountDeletionTemplate } from './templates/account-deletion.template'
 // import { DeactivateTemplate } from './templates/deactivate.template'
 // import { EnableTwoFactorTemplate } from './templates/enable-two-factor.template'
-// import { PasswordRecoveryTemplate } from './templates/password-recovery.template'
+import { PasswordRecoveryTemplate } from './templates/password-recovery.template'
 import { VerificationTemplate } from './templates/verification.template'
 
 // import { VerifyChannelTemplate } from './templates/verify-channel.template'
@@ -27,18 +27,18 @@ export class MailService {
 		return this.sendMail(email, 'Верификация аккаунта', html)
 	}
 
-	// public async sendPasswordResetToken(
-	// 	email: string,
-	// 	token: string,
-	// 	metadata: SessionMetadata
-	// ) {
-	// 	const domain = this.configService.getOrThrow<string>('ALLOWED_ORIGIN')
-	// 	const html = await render(
-	// 		PasswordRecoveryTemplate({ domain, token, metadata })
-	// 	)
+	public async sendPasswordResetToken(
+		email: string,
+		token: string,
+		metadata: SessionMetadata
+	) {
+		const domain = this.configService.getOrThrow<string>('ALLOWED_ORIGIN')
+		const html = await render(
+			PasswordRecoveryTemplate({ domain, token, metadata })
+		)
 
-	// 	return this.sendMail(email, 'Сброс пароля', html)
-	// }
+		return this.sendMail(email, 'Сброс пароля', html)
+	}
 
 	// public async sendDeactivateToken(
 	// 	email: string,
