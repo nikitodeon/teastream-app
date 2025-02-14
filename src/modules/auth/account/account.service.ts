@@ -21,24 +21,24 @@ export class AccountService {
 		// private readonly verificationService: VerificationService
 	) {}
 
-	public async findAll() {
-		const users = await this.prismaService.user.findMany()
+	// public async findAll() {
+	// 	const users = await this.prismaService.user.findMany()
 
-		return users
+	// 	return users
 
-		// public async me(id: string) {
-		// 	const user = await this.prismaService.user.findUnique({
-		// 		where: {
-		// 			id
-		// 		},
-		// 		include: {
-		// 			socialLinks: true,
-		// 			stream: true,
-		// 			notificationSettings: true
-		// 		}
-		// 	})
+	public async me(id: string) {
+		const user = await this.prismaService.user.findUnique({
+			where: {
+				id
+			}
+			// include: {
+			// 	socialLinks: true,
+			// 	stream: true,
+			// 	notificationSettings: true
+			// }
+		})
 
-		// 	return user
+		return user
 	}
 
 	public async create(input: CreateUserInput) {

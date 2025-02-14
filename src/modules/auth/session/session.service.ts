@@ -78,16 +78,12 @@ export class SessionService {
 	// 	}
 	// }
 
-	public async login(
-		req: Request,
-		input: LoginInput
-		// , userAgent: string
-	) {
-		const {
-			login,
-			password
-			//  pin
-		} = input
+	public async login(req: Request, input: LoginInput) {
+		const { login, password } = input
+
+		console.log(
+			'Начало процесса входа. Поиск пользователя в базе данных...'
+		) // Логирование
 
 		const user = await this.prismaService.user.findFirst({
 			where: {
@@ -98,33 +94,53 @@ export class SessionService {
 			}
 		})
 
-		if (
-			!user
-			// || user.isDeactivated
-		) {
+		if (!user) {
+			console.error('Пользователь не найден в базе данных.') // Логирование ошибки
 			throw new NotFoundException('Пользователь не найден')
 		}
+
+		console.log('Пользователь найден. Проверка пароля...') // Логирование
 
 		const isValidPassword = await verify(user.password, password)
 
 		if (!isValidPassword) {
+			console.error('Неверный пароль.') // Логирование ошибки
 			throw new UnauthorizedException('Неверный пароль')
 		}
+
+		console.log('Пароль верный. Начало создания сессии...') // Логирование
+
 		return new Promise((resolve, reject) => {
 			req.session.createdAt = new Date()
 			req.session.userId = user.id
 
+			console.log('Данные сессии установлены:', {
+				createdAt: req.session.createdAt,
+				userId: req.session.userId
+			}) // Логирование данных сессии
+
+			console.log('Попытка сохранить сессию...') // Логирование
+
 			req.session.save(err => {
 				if (err) {
+					console.error('Ошибка при сохранении сессии:', err) // Логирование ошибки
 					return reject(
 						new InternalServerErrorException(
 							'Не удалось сохранить сессию'
 						)
 					)
 				}
+
+				console.log('Сессия успешно сохранена.') // Логирование успешного сохранения
+				console.log('Данные сессии после сохранения:', {
+					createdAt: req.session.createdAt,
+					userId: req.session.userId
+				}) // Логирование данных сессии после сохранения
+				console.log('Заголовки ответа сервера:', req.res?.getHeaders()) // <-- СЮДА
 				resolve(user)
 			})
 		})
+
 		// if (!user.isEmailVerified) {
 		// 	await this.verificationService.sendVerificationToken(user)
 
@@ -162,6 +178,10 @@ export class SessionService {
 
 	public async logout(req: Request) {
 		return new Promise((resolve, reject) => {
+			console.log(
+				'Попытка выхода пользователя. Текущая сессия:',
+				req.session
+			)
 			req.session.destroy(err => {
 				if (err) {
 					return reject(
@@ -170,9 +190,13 @@ export class SessionService {
 						)
 					)
 				}
+				console.log('Сессия успешно удалена.')
 				req.res?.clearCookie(
 					this.configService.getOrThrow<string>('SESSION_NAME')
 				)
+				const sessionName =
+					this.configService.getOrThrow<string>('SESSION_NAME')
+				console.log(`Cookie с именем ${sessionName} очищен.`)
 				resolve(true)
 			})
 		})
