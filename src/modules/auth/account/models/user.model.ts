@@ -37,11 +37,11 @@ export class UserModel implements User {
 	// @Field(() => String, { nullable: true })
 	// public telegramId: string
 
-	// @Field(() => Boolean)
-	// public isVerified: boolean
+	@Field(() => Boolean)
+	public isVerified: boolean
 
-	// @Field(() => Boolean)
-	// public isEmailVerified: boolean
+	@Field(() => Boolean)
+	public isEmailVerified: boolean
 
 	// @Field(() => Boolean)
 	// public isTotpEnabled: boolean

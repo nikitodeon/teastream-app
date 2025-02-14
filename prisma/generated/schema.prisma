@@ -28,16 +28,16 @@ model User {
 
   // telegramId String? @unique @map("telegram_id")
 
-  // isVerified Boolean @default(false) @map("is_verified")
+  isVerified Boolean @default(false) @map("is_verified")
 
-  // isEmailVerified Boolean @default(false) @map("is_email_verified")
+  isEmailVerified Boolean @default(false) @map("is_email_verified")
   // isTotpEnabled   Boolean @default(false) @map("is_totp_enabled")
   // totpSecret      String? @map("totp_secret")
 
   // isDeactivated Boolean   @default(false) @map("is_deactivated")
   // deactivatedAt DateTime? @map("deactivated_at")
 
-  // tokens               Token[]
+  tokens Token[]
   // socialLinks          SocialLink[]
   // stream               Stream?
   // chatMessages         ChatMessage[]
@@ -245,30 +245,30 @@ model User {
 //   @@map("sponsorship_subscriptions")
 // }
 
-// model Token {
-//   id String @id @default(uuid())
+model Token {
+  id String @id @default(uuid())
 
-//   token     String    @unique
-//   type      TokenType
-//   expiresIn DateTime  @map("expires_in")
+  token     String    @unique
+  type      TokenType
+  expiresIn DateTime  @map("expires_in")
 
-//   user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   userId String? @map("user_id")
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @map("user_id")
 
-//   createdAt DateTime @default(now()) @map("created_at")
-//   updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-//   @@map("tokens")
-// }
+  @@map("tokens")
+}
 
-// enum TokenType {
-//   EMAIL_VERIFY
-//   PASSWORD_RESET
-//   DEACTIVATE_ACCOUNT
-//   TELEGRAM_AUTH
+enum TokenType {
+  EMAIL_VERIFY
+  PASSWORD_RESET
+  DEACTIVATE_ACCOUNT
+  TELEGRAM_AUTH
 
-//   @@map("token_types")
-// }
+  @@map("token_types")
+}
 
 // enum NotificationType {
 //   STREAM_START

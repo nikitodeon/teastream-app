@@ -9,14 +9,14 @@ import { AccountModule } from '../modules/auth/account/account.module'
 // import { ProfileModule } from '../modules/auth/profile/profile.module'
 import { SessionModule } from '../modules/auth/session/session.module'
 // import { TotpModule } from '../modules/auth/totp/totp.module'
-// import { VerificationModule } from '../modules/auth/verification/verification.module'
+import { VerificationModule } from '../modules/auth/verification/verification.module'
 // import { CategoryModule } from '../modules/category/category.module'
 // import { ChannelModule } from '../modules/channel/channel.module'
 // import { ChatModule } from '../modules/chat/chat.module'
 // import { CronModule } from '../modules/cron/cron.module'
 // import { FollowModule } from '../modules/follow/follow.module'
 // import { LivekitModule } from '../modules/libs/livekit/livekit.module'
-// import { MailModule } from '../modules/libs/mail/mail.module'
+import { MailModule } from '../modules/libs/mail/mail.module'
 // import { StorageModule } from '../modules/libs/storage/storage.module'
 // import { StripeModule } from '../modules/libs/stripe/stripe.module'
 // import { TelegramModule } from '../modules/libs/telegram/telegram.module'
@@ -60,16 +60,16 @@ import { RedisModule } from './redis/redis.module'
 		// }),
 		PrismaModule,
 		RedisModule,
-		// MailModule,
+		MailModule,
 		// StorageModule,
 		// LivekitModule,
 		// TelegramModule,
 		// StripeModule,
 		// CronModule,
 		AccountModule,
-		SessionModule
+		SessionModule,
 		// ProfileModule,
-		// VerificationModule,
+		VerificationModule
 		// PasswordRecoveryModule,
 		// TotpModule,
 		// DeactivateModule,
