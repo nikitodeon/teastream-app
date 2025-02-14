@@ -12,8 +12,7 @@ import type { User } from '@/prisma/generated'
 // import { SocialLinkModel } from '../../profile/models/social-link.model'
 
 @ObjectType()
-//  implements User
-export class UserModel {
+export class UserModel implements User {
 	@Field(() => ID)
 	public id: string
 

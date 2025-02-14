@@ -15,8 +15,8 @@ import type { Request } from 'express'
 
 import { PrismaService } from '@/src/core/prisma/prisma.service'
 import { RedisService } from '@/src/core/redis/redis.service'
+import { getSessionMetadata } from '@/src/shared/utils/session-metadata.util'
 
-// import { getSessionMetadata } from '@/src/shared/utils/session-metadata.util'
 // import { destroySession, saveSession } from '@/src/shared/utils/session.util'
 
 // import { VerificationService } from '../verification/verification.service'
@@ -27,58 +27,72 @@ import { LoginInput } from './inputs/login.input'
 export class SessionService {
 	public constructor(
 		private readonly prismaService: PrismaService,
-		// private readonly redisService: RedisService,
+		private readonly redisService: RedisService,
 		private readonly configService: ConfigService
 		// private readonly verificationService: VerificationService
 	) {}
 
-	// public async findByUser(req: Request) {
-	// 	const userId = req.session.userId
+	public async findByUser(req: Request) {
+		const userId = req.session.userId
 
-	// 	if (!userId) {
-	// 		throw new NotFoundException('Пользователь не обнаружен в сессии')
-	// 	}
+		if (!userId) {
+			throw new NotFoundException('Пользователь не обнаружен в сессии')
+		}
 
-	// 	const keys = await this.redisService.keys('*')
+		const keys = await this.redisService.keys('*')
 
-	// 	const userSessions = []
+		const userSessions: Array<{
+			createdAt: number
+			userId: string
+			id: string
+		}> = []
 
-	// 	for (const key of keys) {
-	// 		const sessionData = await this.redisService.get(key)
+		for (const key of keys) {
+			const sessionData = await this.redisService.get(key)
 
-	// 		if (sessionData) {
-	// 			const session = JSON.parse(sessionData)
+			if (sessionData) {
+				const session = JSON.parse(sessionData)
 
-	// 			if (session.userId === userId) {
-	// 				userSessions.push({
-	// 					...session,
-	// 					id: key.split(':')[1]
-	// 				})
-	// 			}
-	// 		}
-	// 	}
+				if (session.userId === userId) {
+					userSessions.push({
+						...session,
+						id: key.split(':')[1]
+					})
+				}
+			}
+		}
 
-	// 	userSessions.sort((a, b) => b.createdAt - a.createdAt)
+		userSessions.sort((a, b) => b.createdAt - a.createdAt)
 
-	// 	return userSessions.filter(session => session.id !== req.session.id)
-	// }
+		return userSessions.filter(session => session.id !== req.session.id)
+	}
 
-	// public async findCurrent(req: Request) {
-	// 	const sessionId = req.session.id
+	public async findCurrent(req: Request) {
+		const sessionId = req.session.id
 
-	// 	const sessionData = await this.redisService.get(
-	// 		`${this.configService.getOrThrow<string>('SESSION_FOLDER')}${sessionId}`
-	// 	)
+		const sessionFolder =
+			this.configService.getOrThrow<string>('SESSION_FOLDER')
 
-	// 	const session = JSON.parse(sessionData)
+		if (!sessionFolder) {
+			throw new Error('SESSION_FOLDER не установлен в конфигурации')
+		}
 
-	// 	return {
-	// 		...session,
-	// 		id: sessionId
-	// 	}
-	// }
+		const sessionKey = `${sessionFolder}${sessionId}`
+		const sessionData = await this.redisService.get(sessionKey)
 
-	public async login(req: Request, input: LoginInput) {
+		if (!sessionData) {
+			throw new NotFoundException('Сессия не найдена')
+		}
+
+		const session = JSON.parse(sessionData)
+
+		return {
+			...session,
+			id: sessionId
+		}
+	}
+
+	public async login(req: Request, input: LoginInput, userAgent: string) {
 		const { login, password } = input
 
 		console.log(
@@ -109,10 +123,11 @@ export class SessionService {
 		}
 
 		console.log('Пароль верный. Начало создания сессии...') // Логирование
-
+		const metadata = getSessionMetadata(req, userAgent)
 		return new Promise((resolve, reject) => {
 			req.session.createdAt = new Date()
 			req.session.userId = user.id
+			req.session.metadata = metadata
 
 			console.log('Данные сессии установлены:', {
 				createdAt: req.session.createdAt,
@@ -178,48 +193,68 @@ export class SessionService {
 
 	public async logout(req: Request) {
 		return new Promise((resolve, reject) => {
-			console.log(
-				'Попытка выхода пользователя. Текущая сессия:',
-				req.session
-			)
-			req.session.destroy(err => {
+			/////////////////////////////
+
+			const sessionId = req.session.id
+			const sessionKey = `${this.configService.getOrThrow<string>('SESSION_FOLDER')}${sessionId}`
+
+			// Удаляем сессию из Redis
+			this.redisService.del(sessionKey, err => {
 				if (err) {
+					console.error('Ошибка при удалении сессии из Redis:', err)
 					return reject(
 						new InternalServerErrorException(
-							'Не удалось завершить сессию'
+							'Не удалось удалить сессию из Redis'
 						)
 					)
 				}
-				console.log('Сессия успешно удалена.')
-				req.res?.clearCookie(
-					this.configService.getOrThrow<string>('SESSION_NAME')
+
+				console.log('Сессия успешно удалена из Redis.')
+
+				///////////////
+				console.log(
+					'Попытка выхода пользователя. Текущая сессия:',
+					req.session
 				)
-				const sessionName =
-					this.configService.getOrThrow<string>('SESSION_NAME')
-				console.log(`Cookie с именем ${sessionName} очищен.`)
-				resolve(true)
+				req.session.destroy(err => {
+					if (err) {
+						return reject(
+							new InternalServerErrorException(
+								'Не удалось завершить сессию'
+							)
+						)
+					}
+					console.log('Сессия успешно удалена.')
+					req.res?.clearCookie(
+						this.configService.getOrThrow<string>('SESSION_NAME')
+					)
+					const sessionName =
+						this.configService.getOrThrow<string>('SESSION_NAME')
+					console.log(`Cookie с именем ${sessionName} очищен.`)
+					resolve(true)
+				})
 			})
 		})
 		// 	return destroySession(req, this.configService)
 		// }
+	}
+	public async clearSession(req: Request) {
+		req.res?.clearCookie(
+			this.configService.getOrThrow<string>('SESSION_NAME')
+		)
 
-		// public async clearSession(req: Request) {
-		// 	req.res.clearCookie(
-		// 		this.configService.getOrThrow<string>('SESSION_NAME')
-		// 	)
+		return true
+	}
 
-		// 	return true
-		// }
+	public async remove(req: Request, id: string) {
+		if (req.session.id === id) {
+			throw new ConflictException('Текущую сессию удалить нельзя')
+		}
 
-		// public async remove(req: Request, id: string) {
-		// 	if (req.session.id === id) {
-		// 		throw new ConflictException('Текущую сессию удалить нельзя')
-		// 	}
+		await this.redisService.del(
+			`${this.configService.getOrThrow<string>('SESSION_FOLDER')}${id}`
+		)
 
-		// 	await this.redisService.del(
-		// 		`${this.configService.getOrThrow<string>('SESSION_FOLDER')}${id}`
-		// 	)
-
-		// 	return true
+		return true
 	}
 }
