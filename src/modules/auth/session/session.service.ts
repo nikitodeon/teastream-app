@@ -10,8 +10,7 @@ import { ConfigService } from '@nestjs/config'
 import { Int } from '@nestjs/graphql'
 import { verify } from 'argon2'
 import type { Request } from 'express'
-
-// import { TOTP } from 'otpauth'
+import { TOTP } from 'otpauth'
 
 import { PrismaService } from '@/src/core/prisma/prisma.service'
 import { RedisService } from '@/src/core/redis/redis.service'
@@ -93,7 +92,7 @@ export class SessionService {
 	}
 
 	public async login(req: Request, input: LoginInput, userAgent: string) {
-		const { login, password } = input
+		const { login, password, pin } = input
 
 		console.log(
 			'Начало процесса входа. Поиск пользователя в базе данных...'
@@ -130,6 +129,29 @@ export class SessionService {
 				'Аккаунт не верифицирован. Пожалуйста, проверьте свою почту для подтверждения'
 			)
 		}
+
+		if (user.isTotpEnabled) {
+			if (!pin) {
+				return {
+					message: 'Необходим код для завершения авторизации'
+				}
+			}
+
+			const totp = new TOTP({
+				issuer: 'TeaStream',
+				label: `${user.email}`,
+				algorithm: 'SHA1',
+				digits: 6,
+				secret: user.totpSecret ?? undefined
+			})
+
+			const delta = totp.validate({ token: pin })
+
+			if (delta === null) {
+				throw new BadRequestException('Неверный код')
+			}
+		}
+
 		const metadata = getSessionMetadata(req, userAgent)
 		return new Promise((resolve, reject) => {
 			req.session.createdAt = new Date()
@@ -159,7 +181,8 @@ export class SessionService {
 					userId: req.session.userId
 				}) // Логирование данных сессии после сохранения
 				console.log('Заголовки ответа сервера:', req.res?.getHeaders()) // <-- СЮДА
-				resolve(user)
+				console.log('Возвращаемый пользователь:', user)
+				resolve({ user })
 			})
 		})
 

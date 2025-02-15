@@ -20,9 +20,9 @@ export class LoginInput {
 	@MinLength(8)
 	public password: string
 
-	// @Field(() => String, { nullable: true })
-	// @IsString()
-	// @IsOptional()
-	// @Length(6, 6)
-	// public pin?: string
+	@Field(() => String, { nullable: true })
+	@IsString()
+	@IsOptional()
+	@Length(6, 6)
+	public pin?: string
 }

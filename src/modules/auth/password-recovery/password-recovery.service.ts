@@ -16,7 +16,7 @@ import { MailService } from '../../libs/mail/mail.service'
 
 // import { TelegramService } from '../../libs/telegram/telegram.service'
 
-// import { NewPasswordInput } from './inputs/new-password.input'
+import { NewPasswordInput } from './inputs/new-password.input'
 import { ResetPasswordInput } from './inputs/reset-password.input'
 
 @Injectable()
@@ -75,42 +75,42 @@ export class PasswordRecoveryService {
 		return true
 	}
 
-	// public async newPassword(input: NewPasswordInput) {
-	// 	const { password, token } = input
+	public async newPassword(input: NewPasswordInput) {
+		const { password, token } = input
 
-	// 	const existingToken = await this.prismaService.token.findUnique({
-	// 		where: {
-	// 			token,
-	// 			type: TokenType.PASSWORD_RESET
-	// 		}
-	// 	})
+		const existingToken = await this.prismaService.token.findUnique({
+			where: {
+				token,
+				type: TokenType.PASSWORD_RESET
+			}
+		})
 
-	// 	if (!existingToken) {
-	// 		throw new NotFoundException('Токен не найден')
-	// 	}
+		if (!existingToken) {
+			throw new NotFoundException('Токен не найден')
+		}
 
-	// 	const hasExpired = new Date(existingToken.expiresIn) < new Date()
+		const hasExpired = new Date(existingToken.expiresIn) < new Date()
 
-	// 	if (hasExpired) {
-	// 		throw new BadRequestException('Токен истёк')
-	// 	}
+		if (hasExpired) {
+			throw new BadRequestException('Токен истёк')
+		}
 
-	// 	await this.prismaService.user.update({
-	// 		where: {
-	// 			id: existingToken.userId
-	// 		},
-	// 		data: {
-	// 			password: await hash(password)
-	// 		}
-	// 	})
+		await this.prismaService.user.update({
+			where: {
+				id: existingToken.userId ?? undefined
+			},
+			data: {
+				password: await hash(password)
+			}
+		})
 
-	// 	await this.prismaService.token.delete({
-	// 		where: {
-	// 			id: existingToken.id,
-	// 			type: TokenType.PASSWORD_RESET
-	// 		}
-	// 	})
+		await this.prismaService.token.delete({
+			where: {
+				id: existingToken.id,
+				type: TokenType.PASSWORD_RESET
+			}
+		})
 
-	// 	return true
-	// }
+		return true
+	}
 }
