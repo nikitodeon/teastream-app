@@ -25,7 +25,7 @@ import { StorageModule } from '../modules/libs/storage/storage.module'
 // import { SubscriptionModule } from '../modules/sponsorship/subscription/subscription.module'
 // import { TransactionModule } from '../modules/sponsorship/transaction/transaction.module'
 // import { IngressModule } from '../modules/stream/ingress/ingress.module'
-// import { StreamModule } from '../modules/stream/stream.module'
+import { StreamModule } from '../modules/stream/stream.module'
 // import { WebhookModule } from '../modules/webhook/webhook.module'
 import { IS_DEV_ENV } from '../shared/utils/is-dev.util'
 
@@ -72,8 +72,8 @@ import { RedisModule } from './redis/redis.module'
 		VerificationModule,
 		PasswordRecoveryModule,
 		TotpModule,
-		DeactivateModule
-		// StreamModule,
+		DeactivateModule,
+		StreamModule
 		// IngressModule,
 		// WebhookModule,
 		// CategoryModule,
