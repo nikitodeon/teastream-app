@@ -6,7 +6,7 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { AccountModule } from '../modules/auth/account/account.module'
 import { DeactivateModule } from '../modules/auth/deactivate/deactivate.module'
 import { PasswordRecoveryModule } from '../modules/auth/password-recovery/password-recovery.module'
-// import { ProfileModule } from '../modules/auth/profile/profile.module'
+import { ProfileModule } from '../modules/auth/profile/profile.module'
 import { SessionModule } from '../modules/auth/session/session.module'
 import { TotpModule } from '../modules/auth/totp/totp.module'
 import { VerificationModule } from '../modules/auth/verification/verification.module'
@@ -17,7 +17,7 @@ import { CronModule } from '../modules/cron/cron.module'
 // import { FollowModule } from '../modules/follow/follow.module'
 // import { LivekitModule } from '../modules/libs/livekit/livekit.module'
 import { MailModule } from '../modules/libs/mail/mail.module'
-// import { StorageModule } from '../modules/libs/storage/storage.module'
+import { StorageModule } from '../modules/libs/storage/storage.module'
 // import { StripeModule } from '../modules/libs/stripe/stripe.module'
 // import { TelegramModule } from '../modules/libs/telegram/telegram.module'
 // import { NotificationModule } from '../modules/notification/notification.module'
@@ -61,14 +61,14 @@ import { RedisModule } from './redis/redis.module'
 		PrismaModule,
 		RedisModule,
 		MailModule,
-		// StorageModule,
+		StorageModule,
 		// LivekitModule,
 		// TelegramModule,
 		// StripeModule,
 		CronModule,
 		AccountModule,
 		SessionModule,
-		// ProfileModule,
+		ProfileModule,
 		VerificationModule,
 		PasswordRecoveryModule,
 		TotpModule,
