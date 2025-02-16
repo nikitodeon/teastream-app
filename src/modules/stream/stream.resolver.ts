@@ -7,7 +7,7 @@ import { Authorization } from '@/src/shared/decorators/auth.decorator'
 import { Authorized } from '@/src/shared/decorators/authorized.decorator'
 import { FileValidationPipe } from '@/src/shared/pipes/file-validation.pipe'
 
-// import { ChangeStreamInfoInput } from './inputs/change-stream-info.input'
+import { ChangeStreamInfoInput } from './inputs/change-stream-info.input'
 import { FiltersInput } from './inputs/filters.input'
 // import { GenerateStreamTokenInput } from './inputs/generate-stream-token.input'
 // import { GenerateStreamTokenModel } from './models/generate-stream-token.model'
@@ -28,30 +28,30 @@ export class StreamResolver {
 		return this.streamService.findRandom()
 	}
 
-	// @Authorization()
-	// @Mutation(() => Boolean, { name: 'changeStreamInfo' })
-	// public async changeInfo(
-	// 	@Authorized() user: User,
-	// 	@Args('data') input: ChangeStreamInfoInput
-	// ) {
-	// 	return this.streamService.changeInfo(user, input)
-	// }
+	@Authorization()
+	@Mutation(() => Boolean, { name: 'changeStreamInfo' })
+	public async changeInfo(
+		@Authorized() user: User,
+		@Args('data') input: ChangeStreamInfoInput
+	) {
+		return this.streamService.changeInfo(user, input)
+	}
 
-	// @Authorization()
-	// @Mutation(() => Boolean, { name: 'changeStreamThumbnail' })
-	// public async changeThumbnail(
-	// 	@Authorized() user: User,
-	// 	@Args('thumbnail', { type: () => GraphQLUpload }, FileValidationPipe)
-	// 	thumbnail: Upload
-	// ) {
-	// 	return this.streamService.changeThumbnail(user, thumbnail)
-	// }
+	@Authorization()
+	@Mutation(() => Boolean, { name: 'changeStreamThumbnail' })
+	public async changeThumbnail(
+		@Authorized() user: User,
+		@Args('thumbnail', { type: () => GraphQLUpload }, FileValidationPipe)
+		thumbnail: Upload
+	) {
+		return this.streamService.changeThumbnail(user, thumbnail)
+	}
 
-	// @Authorization()
-	// @Mutation(() => Boolean, { name: 'removeStreamThumbnail' })
-	// public async removeThumbnail(@Authorized() user: User) {
-	// 	return this.streamService.removeThumbnail(user)
-	// }
+	@Authorization()
+	@Mutation(() => Boolean, { name: 'removeStreamThumbnail' })
+	public async removeThumbnail(@Authorized() user: User) {
+		return this.streamService.removeThumbnail(user)
+	}
 
 	// @Mutation(() => GenerateStreamTokenModel, { name: 'generateStreamToken' })
 	// public async generateToken(@Args('data') input: GenerateStreamTokenInput) {

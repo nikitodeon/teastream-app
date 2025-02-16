@@ -9,7 +9,7 @@ import { PrismaService } from '@/src/core/prisma/prisma.service'
 
 import { StorageService } from '../libs/storage/storage.service'
 
-// import { ChangeStreamInfoInput } from './inputs/change-stream-info.input'
+import { ChangeStreamInfoInput } from './inputs/change-stream-info.input'
 import { FiltersInput } from './inputs/filters.input'
 
 // import { GenerateStreamTokenInput } from './inputs/generate-stream-token.input'
@@ -17,9 +17,9 @@ import { FiltersInput } from './inputs/filters.input'
 @Injectable()
 export class StreamService {
 	public constructor(
-		private readonly prismaService: PrismaService
+		private readonly prismaService: PrismaService,
 		// private readonly configService: ConfigService,
-		// private readonly storageService: StorageService
+		private readonly storageService: StorageService
 	) {}
 
 	public async findAll(input: FiltersInput = {}) {
@@ -83,99 +83,99 @@ export class StreamService {
 			.filter(Boolean)
 	}
 
-	// public async changeInfo(user: User, input: ChangeStreamInfoInput) {
-	// 	const { title, categoryId } = input
+	public async changeInfo(user: User, input: ChangeStreamInfoInput) {
+		const { title, categoryId } = input
 
-	// 	await this.prismaService.stream.update({
-	// 		where: {
-	// 			userId: user.id
-	// 		},
-	// 		data: {
-	// 			title,
-	// 			category: {
-	// 				connect: {
-	// 					id: categoryId
-	// 				}
-	// 			}
-	// 		}
-	// 	})
+		await this.prismaService.stream.update({
+			where: {
+				userId: user.id
+			},
+			data: {
+				title
+				// category: {
+				// 	connect: {
+				// 		id: categoryId
+				// 	}
+				// }
+			}
+		})
 
-	// 	return true
-	// }
+		return true
+	}
 
-	// public async changeThumbnail(user: User, file: Upload) {
-	// 	const stream = await this.findByUserId(user)
+	public async changeThumbnail(user: User, file: Upload) {
+		const stream = await this.findByUserId(user)
 
-	// 	if (stream.thumbnailUrl) {
-	// 		await this.storageService.remove(stream.thumbnailUrl)
-	// 	}
+		if (stream?.thumbnailUrl) {
+			await this.storageService.remove(stream.thumbnailUrl)
+		}
 
-	// 	const chunks: Buffer[] = []
+		const chunks: Buffer[] = []
 
-	// 	for await (const chunk of file.createReadStream()) {
-	// 		chunks.push(chunk)
-	// 	}
+		for await (const chunk of file.createReadStream()) {
+			chunks.push(chunk)
+		}
 
-	// 	const buffer = Buffer.concat(chunks)
+		const buffer = Buffer.concat(chunks)
 
-	// 	const fileName = `/streams/${user.username}.webp`
+		const fileName = `/streams/${user.username}.webp`
 
-	// 	if (file.filename && file.filename.endsWith('.gif')) {
-	// 		const processedBuffer = await sharp(buffer, { animated: true })
-	// 			.resize(1280, 720)
-	// 			.webp()
-	// 			.toBuffer()
+		if (file.filename && file.filename.endsWith('.gif')) {
+			const processedBuffer = await sharp(buffer, { animated: true })
+				.resize(1280, 720)
+				.webp()
+				.toBuffer()
 
-	// 		await this.storageService.upload(
-	// 			processedBuffer,
-	// 			fileName,
-	// 			'image/webp'
-	// 		)
-	// 	} else {
-	// 		const processedBuffer = await sharp(buffer)
-	// 			.resize(1280, 720)
-	// 			.webp()
-	// 			.toBuffer()
+			await this.storageService.upload(
+				processedBuffer,
+				fileName,
+				'image/webp'
+			)
+		} else {
+			const processedBuffer = await sharp(buffer)
+				.resize(1280, 720)
+				.webp()
+				.toBuffer()
 
-	// 		await this.storageService.upload(
-	// 			processedBuffer,
-	// 			fileName,
-	// 			'image/webp'
-	// 		)
-	// 	}
+			await this.storageService.upload(
+				processedBuffer,
+				fileName,
+				'image/webp'
+			)
+		}
 
-	// 	await this.prismaService.stream.update({
-	// 		where: {
-	// 			userId: user.id
-	// 		},
-	// 		data: {
-	// 			thumbnailUrl: fileName
-	// 		}
-	// 	})
+		await this.prismaService.stream.update({
+			where: {
+				userId: user.id
+			},
+			data: {
+				thumbnailUrl: fileName
+			}
+		})
 
-	// 	return true
-	// }
+		return true
+	}
 
-	// public async removeThumbnail(user: User) {
-	// 	const stream = await this.findByUserId(user)
+	public async removeThumbnail(user: User) {
+		const stream = await this.findByUserId(user)
 
-	// 	if (!stream.thumbnailUrl) {
-	// 		return
-	// 	}
+		if (!stream?.thumbnailUrl) {
+			return
+		}
 
-	// 	await this.storageService.remove(stream.thumbnailUrl)
+		await this.storageService.remove(stream.thumbnailUrl)
 
-	// 	await this.prismaService.stream.update({
-	// 		where: {
-	// 			userId: user.id
-	// 		},
-	// 		data: {
-	// 			thumbnailUrl: null
-	// 		}
-	// 	})
+		await this.prismaService.stream.update({
+			where: {
+				userId: user.id
+			},
+			data: {
+				thumbnailUrl: null
+			}
+		})
 
-	// 	return true
-	// }
+		return true
+	}
 
 	// public async generateToken(input: GenerateStreamTokenInput) {
 	// 	const { userId, channelId } = input
@@ -227,15 +227,15 @@ export class StreamService {
 	// 	return { token: token.toJwt() }
 	// }
 
-	// private async findByUserId(user: User) {
-	// 	const stream = await this.prismaService.stream.findUnique({
-	// 		where: {
-	// 			userId: user.id
-	// 		}
-	// 	})
+	private async findByUserId(user: User) {
+		const stream = await this.prismaService.stream.findUnique({
+			where: {
+				userId: user.id
+			}
+		})
 
-	// 	return stream
-	// }
+		return stream
+	}
 
 	private findBySearchTermFilter(
 		searchTerm: string
