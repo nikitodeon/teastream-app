@@ -26,7 +26,7 @@ model User {
   avatar String?
   bio    String?
 
-  // telegramId String? @unique @map("telegram_id")
+  telegramId String? @unique @map("telegram_id")
 
   isVerified Boolean @default(false) @map("is_verified")
 
@@ -37,15 +37,15 @@ model User {
   isDeactivated Boolean   @default(false) @map("is_deactivated")
   deactivatedAt DateTime? @map("deactivated_at")
 
-  tokens      Token[]
-  socialLinks SocialLink[]
-  stream      Stream?
-  // chatMessages         ChatMessage[]
-  // notifications        Notification[]
-  // notificationSettings NotificationSettings?
+  tokens               Token[]
+  socialLinks          SocialLink[]
+  stream               Stream?
+  chatMessages         ChatMessage[]
+  notifications        Notification[]
+  notificationSettings NotificationSettings?
 
-  // followers  Follow[] @relation(name: "followers")
-  // followings Follow[] @relation(name: "followings")
+  followers  Follow[] @relation(name: "followers")
+  followings Follow[] @relation(name: "followings")
 
   // transactions             Transaction[]
   // sponsorshipPlans         SponsorshipPlan[]
@@ -86,17 +86,17 @@ model Stream {
 
   isLive Boolean @default(false) @map("is_live")
 
-  // isChatEnabled              Boolean @default(true) @map("is_chat_enabled")
-  // isChatFollowersOnly        Boolean @default(false) @map("is_chat_followers_only")
-  // isChatPremiumFollowersOnly Boolean @default(false) @map("is_chat_premium_followers_only")
+  isChatEnabled              Boolean @default(true) @map("is_chat_enabled")
+  isChatFollowersOnly        Boolean @default(false) @map("is_chat_followers_only")
+  isChatPremiumFollowersOnly Boolean @default(false) @map("is_chat_premium_followers_only")
 
-  // chatMessages ChatMessage[]
+  chatMessages ChatMessage[]
 
   user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String? @unique @map("user_id")
 
-  // category   Category? @relation(fields: [categoryId], references: [id])
-  // categoryId String?   @map("category_id")
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?   @map("category_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -104,87 +104,87 @@ model Stream {
   @@map("streams")
 }
 
-// model ChatMessage {
-//   id String @id @default(uuid())
+model ChatMessage {
+  id String @id @default(uuid())
 
-//   text String
+  text String
 
-//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("user_id")
 
-//   stream   Stream @relation(fields: [streamId], references: [id], onDelete: Cascade)
-//   streamId String @map("stream_id")
+  stream   Stream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+  streamId String @map("stream_id")
 
-//   createdAt DateTime @default(now()) @map("created_at")
-//   updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-//   @@map("chat_messages")
-// }
+  @@map("chat_messages")
+}
 
-// model Category {
-//   id String @id @default(uuid())
+model Category {
+  id String @id @default(uuid())
 
-//   title        String
-//   slug         String  @unique
-//   description  String?
-//   thumbnailUrl String  @map("thumbnail_url")
+  title        String
+  slug         String  @unique
+  description  String?
+  thumbnailUrl String  @map("thumbnail_url")
 
-//   streams Stream[]
+  streams Stream[]
 
-//   createdAt DateTime @default(now()) @map("created_at")
-//   updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-//   @@map("categories")
-// }
+  @@map("categories")
+}
 
-// model Follow {
-//   id String @id @default(uuid())
+model Follow {
+  id String @id @default(uuid())
 
-//   follower   User   @relation(name: "followers", fields: [followerId], references: [id], onDelete: Cascade)
-//   followerId String @map("follower_id")
+  follower   User   @relation(name: "followers", fields: [followerId], references: [id], onDelete: Cascade)
+  followerId String @map("follower_id")
 
-//   following   User   @relation(name: "followings", fields: [followingId], references: [id], onDelete: Cascade)
-//   followingId String @map("following_id")
+  following   User   @relation(name: "followings", fields: [followingId], references: [id], onDelete: Cascade)
+  followingId String @map("following_id")
 
-//   createdAt DateTime @default(now()) @map("created_at")
-//   updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-//   @@unique([followerId, followingId])
-//   @@index([followerId])
-//   @@index([followingId])
-//   @@map("follows")
-// }
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+  @@map("follows")
+}
 
-// model Notification {
-//   id String @id @default(uuid())
+model Notification {
+  id String @id @default(uuid())
 
-//   message String
-//   type    NotificationType
-//   isRead  Boolean          @default(false) @map("is_read")
+  message String
+  type    NotificationType
+  isRead  Boolean          @default(false) @map("is_read")
 
-//   user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   userId String? @map("user_id")
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @map("user_id")
 
-//   createdAt DateTime @default(now()) @map("created_at")
-//   updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-//   @@map("notifications")
-// }
+  @@map("notifications")
+}
 
-// model NotificationSettings {
-//   id String @id @default(uuid())
+model NotificationSettings {
+  id String @id @default(uuid())
 
-//   siteNotifications     Boolean @default(true) @map("site_notifications")
-//   telegramNotifications Boolean @default(true) @map("telegram_notifications")
+  siteNotifications     Boolean @default(true) @map("site_notifications")
+  telegramNotifications Boolean @default(true) @map("telegram_notifications")
 
-//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   userId String @unique @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique @map("user_id")
 
-//   createdAt DateTime @default(now()) @map("created_at")
-//   updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-//   @@map("notification_settings")
-// }
+  @@map("notification_settings")
+}
 
 // model Transaction {
 //   id String @id @default(uuid())
@@ -270,15 +270,15 @@ enum TokenType {
   @@map("token_types")
 }
 
-// enum NotificationType {
-//   STREAM_START
-//   NEW_FOLLOWER
-//   NEW_SPONSORSHIP
-//   ENABLE_TWO_FACTOR
-//   VERIFIED_CHANNEL
+enum NotificationType {
+  STREAM_START
+  NEW_FOLLOWER
+  NEW_SPONSORSHIP
+  ENABLE_TWO_FACTOR
+  VERIFIED_CHANNEL
 
-//   @@map("notification_types")
-// }
+  @@map("notification_types")
+}
 
 // enum TransactionStatus {
 //   PENDING

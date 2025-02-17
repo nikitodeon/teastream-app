@@ -1,8 +1,6 @@
 import {
 	DeleteObjectCommand,
-	type DeleteObjectCommandInput,
 	PutObjectCommand,
-	type PutObjectCommandInput,
 	S3Client
 } from '@aws-sdk/client-s3'
 import { Injectable } from '@nestjs/common'
@@ -25,37 +23,39 @@ export class StorageService {
 					'S3_SECRET_ACCESS_KEY'
 				)
 			},
-			forcePathStyle: true // ОБЯЗАТЕЛЬНО ДЛЯ BACKBLAZE!
+			forcePathStyle: true // Обязательно для Storj
 		})
 
 		this.bucket = this.configService.getOrThrow<string>('S3_BUCKET_NAME')
 		this.publicUrl = this.configService.getOrThrow<string>('S3_PUBLIC_URL')
 	}
 
+	// 📌 Загрузка файлов
 	public async upload(buffer: Buffer, key: string, mimetype: string) {
-		const command: PutObjectCommandInput = {
+		const command = new PutObjectCommand({
 			Bucket: this.bucket,
 			Key: key,
 			Body: buffer,
 			ContentType: mimetype
-		}
+		})
 
 		try {
-			await this.client.send(new PutObjectCommand(command))
-			return `${this.publicUrl}/${key}` // Возвращаем публичную ссылку на файл
+			await this.client.send(command)
+			return `${this.publicUrl}/${key}` // Публичная ссылка на файл
 		} catch (error) {
 			throw error
 		}
 	}
 
+	// 📌 Удаление файлов
 	public async remove(key: string) {
-		const command: DeleteObjectCommandInput = {
+		const command = new DeleteObjectCommand({
 			Bucket: this.bucket,
 			Key: key
-		}
+		})
 
 		try {
-			await this.client.send(new DeleteObjectCommand(command))
+			await this.client.send(command)
 		} catch (error) {
 			throw error
 		}
