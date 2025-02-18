@@ -7,11 +7,10 @@ import type { SessionMetadata } from '@/src/shared/types/session-metadata.types'
 
 import { AccountDeletionTemplate } from './templates/account-deletion.template'
 import { DeactivateTemplate } from './templates/deactivate.template'
-// import { EnableTwoFactorTemplate } from './templates/enable-two-factor.template'
+import { EnableTwoFactorTemplate } from './templates/enable-two-factor.template'
 import { PasswordRecoveryTemplate } from './templates/password-recovery.template'
 import { VerificationTemplate } from './templates/verification.template'
-
-// import { VerifyChannelTemplate } from './templates/verify-channel.template'
+import { VerifyChannelTemplate } from './templates/verify-channel.template'
 
 @Injectable()
 export class MailService {
@@ -57,18 +56,18 @@ export class MailService {
 		return this.sendMail(email, 'Аккаунт удалён', html)
 	}
 
-	// public async sendEnableTwoFactor(email: string) {
-	// 	const domain = this.configService.getOrThrow<string>('ALLOWED_ORIGIN')
-	// 	const html = await render(EnableTwoFactorTemplate({ domain }))
+	public async sendEnableTwoFactor(email: string) {
+		const domain = this.configService.getOrThrow<string>('ALLOWED_ORIGIN')
+		const html = await render(EnableTwoFactorTemplate({ domain }))
 
-	// 	return this.sendMail(email, 'Обеспечьте свою безопасность', html)
-	// }
+		return this.sendMail(email, 'Обеспечьте свою безопасность', html)
+	}
 
-	// public async sendVerifyChannel(email: string) {
-	// 	const html = await render(VerifyChannelTemplate())
+	public async sendVerifyChannel(email: string) {
+		const html = await render(VerifyChannelTemplate())
 
-	// 	return this.sendMail(email, 'Ваш канал верифицирован', html)
-	// }
+		return this.sendMail(email, 'Ваш канал верифицирован', html)
+	}
 
 	private sendMail(email: string, subject: string, html: string) {
 		return this.mailerService.sendMail({

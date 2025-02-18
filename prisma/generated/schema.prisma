@@ -47,10 +47,10 @@ model User {
   followers  Follow[] @relation(name: "followers")
   followings Follow[] @relation(name: "followings")
 
-  // transactions             Transaction[]
-  // sponsorshipPlans         SponsorshipPlan[]
-  // sponsorshipSubscriptions SponsorshipSubscription[] @relation(name: "sponsorship_subscriptions")
-  // sponsors                 SponsorshipSubscription[] @relation(name: "sponsors")
+  transactions             Transaction[]
+  sponsorshipPlans         SponsorshipPlan[]
+  sponsorshipSubscriptions SponsorshipSubscription[] @relation(name: "sponsorship_subscriptions")
+  sponsors                 SponsorshipSubscription[] @relation(name: "sponsors")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -186,64 +186,64 @@ model NotificationSettings {
   @@map("notification_settings")
 }
 
-// model Transaction {
-//   id String @id @default(uuid())
+model Transaction {
+  id String @id @default(uuid())
 
-//   amount   Float
-//   currency String
+  amount   Float
+  currency String
 
-//   stripeSubscriptionId String?           @map("stripe_subscription_id")
-//   status               TransactionStatus @default(PENDING)
+  stripeSubscriptionId String?           @map("stripe_subscription_id")
+  status               TransactionStatus @default(PENDING)
 
-//   user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   userId String? @map("user_id")
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @map("user_id")
 
-//   createdAt DateTime @default(now()) @map("created_at")
-//   updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-//   @@map("transactions")
-// }
+  @@map("transactions")
+}
 
-// model SponsorshipPlan {
-//   id String @id @default(uuid())
+model SponsorshipPlan {
+  id String @id @default(uuid())
 
-//   title       String
-//   description String?
-//   price       Float
+  title       String
+  description String?
+  price       Float
 
-//   stripeProductId String @map("stripe_product_id")
-//   stripePlanId    String @map("stripe_plan_id")
+  stripeProductId String @map("stripe_product_id")
+  stripePlanId    String @map("stripe_plan_id")
 
-//   channel   User?   @relation(fields: [channelId], references: [id], onDelete: Cascade)
-//   channelId String? @map("channel_id")
+  channel   User?   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  channelId String? @map("channel_id")
 
-//   sponsorshipSubscriptions SponsorshipSubscription[]
+  sponsorshipSubscriptions SponsorshipSubscription[]
 
-//   createdAt DateTime @default(now()) @map("created_at")
-//   updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-//   @@map("sponsorship_plans")
-// }
+  @@map("sponsorship_plans")
+}
 
-// model SponsorshipSubscription {
-//   id String @id @default(uuid())
+model SponsorshipSubscription {
+  id String @id @default(uuid())
 
-//   expiresAt DateTime @map("expires_at")
+  expiresAt DateTime @map("expires_at")
 
-//   plan   SponsorshipPlan? @relation(fields: [planId], references: [id], onDelete: Cascade)
-//   planId String?          @map("plan_id")
+  plan   SponsorshipPlan? @relation(fields: [planId], references: [id], onDelete: Cascade)
+  planId String?          @map("plan_id")
 
-//   user   User?   @relation(name: "sponsorship_subscriptions", fields: [userId], references: [id], onDelete: Cascade)
-//   userId String? @map("user_id")
+  user   User?   @relation(name: "sponsorship_subscriptions", fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @map("user_id")
 
-//   channel   User?   @relation(name: "sponsors", fields: [channelId], references: [id], onDelete: Cascade)
-//   channelId String? @map("channel_id")
+  channel   User?   @relation(name: "sponsors", fields: [channelId], references: [id], onDelete: Cascade)
+  channelId String? @map("channel_id")
 
-//   createdAt DateTime @default(now()) @map("created_at")
-//   updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-//   @@map("sponsorship_subscriptions")
-// }
+  @@map("sponsorship_subscriptions")
+}
 
 model Token {
   id String @id @default(uuid())
@@ -280,11 +280,11 @@ enum NotificationType {
   @@map("notification_types")
 }
 
-// enum TransactionStatus {
-//   PENDING
-//   SUCCESS
-//   FAILED
-//   EXPIRED
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  EXPIRED
 
-//   @@map("transaction_statuses")
-// }
+  @@map("transaction_statuses")
+}

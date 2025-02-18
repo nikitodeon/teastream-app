@@ -1,6 +1,7 @@
 import {
 	BadRequestException,
 	Injectable,
+	NotAcceptableException,
 	NotFoundException
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
@@ -15,8 +16,7 @@ import { getSessionMetadata } from '@/src/shared/utils/session-metadata.util'
 import { destroySession } from '@/src/shared/utils/session.util'
 
 import { MailService } from '../../libs/mail/mail.service'
-
-// import { TelegramService } from '../../libs/telegram/telegram.service'
+import { TelegramService } from '../../libs/telegram/telegram.service'
 
 import { DeactivateAccountInput } from './inputs/deactivate-account.input'
 
@@ -26,8 +26,8 @@ export class DeactivateService {
 		private readonly prismaService: PrismaService,
 		private readonly redisService: RedisService,
 		private readonly configService: ConfigService,
-		private readonly mailSerivce: MailService
-		// private readonly telegramService: TelegramService
+		private readonly mailSerivce: MailService,
+		private readonly telegramService: TelegramService
 	) {}
 
 	public async deactivate(
@@ -101,9 +101,27 @@ export class DeactivateService {
 
 	private async sendDeactivateToken(
 		req: Request,
-		user: User,
+		input: DeactivateAccountInput,
+		// user: User & {
+		// notificationSettings?: {
+		// 	telegramNotifications?: boolean
+		// 	siteNotifications?: boolean
+		// }
+		// }, // Типизируем user для notificationSettings,
 		userAgent: string
 	) {
+		const { email } = input
+		const user = await this.prismaService.user.findUnique({
+			where: {
+				email
+			},
+			include: {
+				notificationSettings: true
+			}
+		})
+		if (!user) {
+			throw new NotAcceptableException('Пользователь не найден')
+		}
 		const deactivateToken = await generateToken(
 			this.prismaService,
 			user,
@@ -119,16 +137,25 @@ export class DeactivateService {
 			metadata
 		)
 
-		// if (
-		// 	deactivateToken.user.notificationSettings.telegramNotifications &&
-		// 	deactivateToken.user.telegramId
-		// ) {
-		// 	await this.telegramService.sendDeactivateToken(
-		// 		deactivateToken.user.telegramId,
-		// 		deactivateToken.token,
-		// 		metadata
-		// 	)
-		// }
+		if (user.notificationSettings?.siteNotifications) {
+			await this.mailSerivce.sendDeactivateToken(
+				user.email,
+				deactivateToken.token,
+				metadata
+			)
+		}
+
+		if (
+			user.notificationSettings?.telegramNotifications &&
+			user.telegramId
+		) {
+			await this.telegramService.sendDeactivateToken(
+				user.telegramId,
+				deactivateToken.token,
+				metadata
+			)
+			// await this.telegramService.sendAccountDeletion(user.telegramId)
+		}
 
 		return true
 	}
