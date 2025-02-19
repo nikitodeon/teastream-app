@@ -19,7 +19,7 @@ import { VerificationInput } from './inputs/verification.input'
 export class VerificationService {
 	public constructor(
 		private readonly prismaService: PrismaService,
-		private readonly mailSerivce: MailService
+		private readonly mailService: MailService
 	) {}
 
 	public async verify(
@@ -85,7 +85,7 @@ export class VerificationService {
 			TokenType.EMAIL_VERIFY
 		)
 
-		await this.mailSerivce.sendVerificationToken(
+		await this.mailService.sendVerificationToken(
 			user.email,
 			verificationToken.token
 		)

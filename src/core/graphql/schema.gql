@@ -174,7 +174,7 @@ type Mutation {
   sendChatMessage(data: SendMessageInput!): ChatMessageModel!
   unfollowChannel(channelId: String!): Boolean!
   updateSocialLink(data: SocialLinkInput!, id: String!): Boolean!
-  verifyAccount(data: VerificationInput!): UserModel!
+  verifyAccount(data: VerificationInput!): AuthModel!
 }
 
 input NewPasswordInput {
