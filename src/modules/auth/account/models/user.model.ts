@@ -4,8 +4,8 @@ import type { User } from '@/prisma/generated'
 import { FollowModel } from '@/src/modules/follow/models/follow.model'
 import { NotificationSettingsModel } from '@/src/modules/notification/models/notification-settings.model'
 import { NotificationModel } from '@/src/modules/notification/models/notification.model'
-// import { PlanModel } from '@/src/modules/sponsorship/plan/models/plan.model'
-// import { SubscriptionModel } from '@/src/modules/sponsorship/subscription/models/subscription.model'
+import { PlanModel } from '@/src/modules/sponsorship/plan/models/plan.model'
+import { SubscriptionModel } from '@/src/modules/sponsorship/subscription/models/subscription.model'
 import { StreamModel } from '@/src/modules/stream/models/stream.model'
 
 import { SocialLinkModel } from '../../profile/models/social-link.model'
@@ -57,13 +57,13 @@ export class UserModel implements User {
 	@Field(() => [SocialLinkModel])
 	public socialLinks: SocialLinkModel[]
 
-	@Field(() => StreamModel)
+	@Field(() => StreamModel, { nullable: true })
 	public stream: StreamModel
 
 	@Field(() => [NotificationModel])
 	public notifications: NotificationModel[]
 
-	@Field(() => NotificationSettingsModel)
+	@Field(() => NotificationSettingsModel, { nullable: true })
 	public notificationSettings: NotificationSettingsModel
 
 	@Field(() => [FollowModel])
@@ -72,11 +72,11 @@ export class UserModel implements User {
 	@Field(() => [FollowModel])
 	public followings: FollowModel[]
 
-	// @Field(() => [PlanModel])
-	// public sponsorshipPlans: PlanModel[]
+	@Field(() => [PlanModel])
+	public sponsorshipPlans: PlanModel[]
 
-	// @Field(() => [SubscriptionModel])
-	// public sponsorshipSubscriptions: SubscriptionModel[]
+	@Field(() => [SubscriptionModel])
+	public sponsorshipSubscriptions: SubscriptionModel[]
 
 	@Field(() => Date)
 	public createdAt: Date

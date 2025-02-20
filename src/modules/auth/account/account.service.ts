@@ -74,10 +74,10 @@ export class AccountService {
 					create: {
 						title: `Стрим ${username}`
 					}
+				},
+				notificationSettings: {
+					create: {}
 				}
-				// notificationSettings: {
-				// 	create: {}
-				// }
 			}
 		})
 

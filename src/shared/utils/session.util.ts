@@ -32,6 +32,7 @@ export function saveSession(
 
 export function destroySession(req: Request, configService: ConfigService) {
 	return new Promise((resolve, reject) => {
+		console.log('Destroying session cookies...', new Error().stack)
 		req.session.destroy(err => {
 			if (err) {
 				return reject(

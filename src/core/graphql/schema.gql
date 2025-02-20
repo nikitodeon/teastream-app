@@ -370,11 +370,13 @@ type UserModel {
   isEmailVerified: Boolean!
   isTotpEnabled: Boolean!
   isVerified: Boolean!
-  notificationSettings: NotificationSettingsModel!
+  notificationSettings: NotificationSettingsModel
   notifications: [NotificationModel!]!
   password: String!
   socialLinks: [SocialLinkModel!]!
-  stream: StreamModel!
+  sponsorshipPlans: [PlanModel!]!
+  sponsorshipSubscriptions: [SubscriptionModel!]!
+  stream: StreamModel
   telegramId: String
   totpSecret: String
   updatedAt: DateTime!
