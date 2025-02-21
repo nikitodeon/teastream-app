@@ -62,8 +62,8 @@ export class ChatService {
 				}
 			},
 			include: {
-				stream: true
-				// 	user: true
+				stream: true,
+				user: true
 			}
 		})
 
