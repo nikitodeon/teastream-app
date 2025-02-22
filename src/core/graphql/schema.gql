@@ -374,7 +374,7 @@ type UserModel {
   notifications: [NotificationModel!]!
   password: String!
   socialLinks: [SocialLinkModel!]!
-  sponsorshipPlans: [PlanModel!]!
+  sponsorshipPlans: [PlanModel!]
   sponsorshipSubscriptions: [SubscriptionModel!]!
   stream: StreamModel
   telegramId: String

@@ -72,8 +72,8 @@ export class UserModel implements User {
 	@Field(() => [FollowModel])
 	public followings: FollowModel[]
 
-	@Field(() => [PlanModel])
-	public sponsorshipPlans: PlanModel[]
+	@Field(() => [PlanModel], { nullable: true })
+	public sponsorshipPlans?: PlanModel[] | null
 
 	@Field(() => [SubscriptionModel])
 	public sponsorshipSubscriptions: SubscriptionModel[]
